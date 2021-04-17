@@ -1,9 +1,15 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import styled from 'styled-components'
-// import AuthContext, { AuthProvider } from 'auth/AuthContext' 
-import {Redirect} from 'react-router-dom'
+import {Redirect, Link, useRouteMatch, Route, Switch} from 'react-router-dom'
 
 import AuthContext from './../../auth/AuthContext'
+
+import ViewAll from './panels/ViewAll'
+import EditPanel from './panels/EditPanel'
+import DeletePanel from './panels/DeletePanel'
+import CreatePanel from './panels/CreatePanel'
+ 
+ 
 
 const DashBoardStyles = styled.header ` 
       display:flex;
@@ -37,38 +43,50 @@ flex:1;
 background:#f3f3f3;
 height: calc(100vh - 64px);
 `
-const DashBoard = (props) => {
-   
-  const auth = useContext(AuthContext)
-    console.log(`Dashboard Render`)
 
-    if(auth.authenticated){
-        return (
-            <DashBoardStyles>              
-                 <SideBar>
-                <header>
-                    <h1>Firebase</h1>
-                    <p>tagline</p>
-                </header>
-           
-            <ul>
-            <li>view all</li>
-            <li>create</li>
-            <li>edit</li>
-            <li>delete</li>
-              
-                </ul>
-            </SideBar>
-            <Panels>
-                
-            </Panels>   
+
+
+const DashBoard = () => {
+    // output the value of the authContext user
+  
+    const auth = useContext(AuthContext)
+    const {path, url} = useRouteMatch()
     
-        </DashBoardStyles>
-     )     
-    }else{
-        return <Redirect to="/login"/>
-    }
-
+  
+    
+      
+       if(auth.authenticated){
+        return ( 
+            <DashBoardStyles>
+                <SideBar>
+                    <header>
+                        <h1>Firebase App</h1>
+                        <p>tagline goes here</p>
+                    </header>
+                    <ul>
+                        <li><Link to={`${url}`}>view all</Link> </li>
+                        <li> <Link to={`${url}/create`}>create content</Link></li>
+                        <li><Link to={`${url}/edit`}>edit content</Link> </li>
+                        <li> <Link to={`${url}/delete`}>remove content</Link></li>
+                        
+                    </ul>
+                </SideBar>
+                <Panels>
+                         
+                    <Switch>
+                        <Route exact path={path}><ViewAll/></Route>
+                        <Route path={`${path}/edit`}><EditPanel/></Route>
+                        <Route path={`${path}/create`}><CreatePanel/></Route>
+                        <Route path={`${path}/delete`}><DeletePanel/></Route>
+                    </Switch>
+                </Panels>  
+            </DashBoardStyles>
+   
+        )
+       }else{
+         return <Redirect to="/login"/>
+       }
+    
 }
  
 export default DashBoard;
